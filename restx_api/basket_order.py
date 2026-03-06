@@ -54,7 +54,7 @@ class BasketOrder(Resource):
             return make_response(jsonify(response_data), status_code)
 
         except Exception:
-            logger.error("An unexpected error occurred in BasketOrder endpoint.")
+            logger.exception("An unexpected error occurred in BasketOrder endpoint.")
             traceback.print_exc()
             error_message = "An unexpected error occurred"
             if get_analyze_mode():
