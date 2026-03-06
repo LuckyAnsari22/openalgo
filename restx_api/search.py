@@ -19,7 +19,6 @@ logger = get_logger(__name__)
 # Initialize schema
 search_schema = SearchSchema()
 
-
 @api.route("/", strict_slashes=False)
 class Search(Resource):
     @limiter.limit(API_RATE_LIMIT)

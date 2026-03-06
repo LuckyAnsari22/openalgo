@@ -20,7 +20,6 @@ logger = get_logger(__name__)
 # Initialize schema
 margin_schema = MarginCalculatorSchema()
 
-
 @api.route("/", strict_slashes=False)
 class MarginCalculator(Resource):
     @limiter.limit(API_RATE_LIMIT)

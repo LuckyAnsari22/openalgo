@@ -1,5 +1,4 @@
 import os
-import traceback
 
 from flask import jsonify, make_response, request
 from flask_restx import Namespace, Resource
@@ -21,7 +20,6 @@ logger = get_logger(__name__)
 
 # Initialize schema
 orderstatus_schema = OrderStatusSchema()
-
 
 @api.route("/", strict_slashes=False)
 class OrderStatus(Resource):

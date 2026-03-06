@@ -1,5 +1,4 @@
 import os
-import traceback
 
 from flask import jsonify, make_response, request
 from flask_restx import Namespace, Resource
@@ -19,7 +18,6 @@ logger = get_logger(__name__)
 
 # Initialize schema
 depth_schema = DepthSchema()
-
 
 @api.route("/", strict_slashes=False)
 class Depth(Resource):
@@ -44,8 +42,7 @@ class Depth(Resource):
         except ValidationError as err:
             return make_response(jsonify({"status": "error", "message": err.messages}), 400)
         except Exception as e:
-            logger.error(f"Unexpected error in depth endpoint: {e}")
-            traceback.print_exc()
+            logger.exception(f"Unexpected error in depth endpoint: {e}")
             return make_response(
                 jsonify({"status": "error", "message": "An unexpected error occurred"}), 500
             )

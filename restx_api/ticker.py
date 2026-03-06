@@ -16,8 +16,6 @@ from .data_schemas import TickerSchema
 
 from types import ModuleType
 
-
-
 API_RATE_LIMIT = os.getenv("API_RATE_LIMIT", "10 per second")
 api = Namespace("ticker", description="Stock Ticker Data API")
 
@@ -27,7 +25,6 @@ logger = get_logger(__name__)
 # Initialize schema
 ticker_schema = TickerSchema()
 
-
 def import_broker_module(broker_name: str) -> ModuleType | None:
     try:
         module_path = f"broker.{broker_name}.api.data"
@@ -36,7 +33,6 @@ def import_broker_module(broker_name: str) -> ModuleType | None:
     except ImportError as error:
         logger.exception(f"Error importing broker module '{module_path}': {error}")
         return None
-
 
 class TextResponse(Response):
     """Custom Response class that supports both text and JSON properties"""
@@ -48,7 +44,6 @@ class TextResponse(Response):
     @json.setter
     def json(self, value):
         self._json = value
-
 
 def convert_timestamp(timestamp: float, interval: str) -> str | tuple[str, str]:
     """Convert timestamp to appropriate format based on interval"""
@@ -65,7 +60,6 @@ def convert_timestamp(timestamp: float, interval: str) -> str | tuple[str, str]:
 
     # For intraday: return date and time separately
     return dt_ist.strftime("%Y-%m-%d"), dt_ist.strftime("%H:%M:%S")
-
 
 def validate_and_adjust_date_range(
     start_date: str | date,
@@ -119,7 +113,6 @@ def validate_and_adjust_date_range(
         logger.exception(f"Error in date range validation: {e}")
         # Return original dates if parsing fails
         return start_date, end_date, False
-
 
 @api.route("/<string:symbol>")
 @api.doc(

@@ -1,6 +1,5 @@
 from marshmallow import Schema, fields, validate
 
-
 class OrderSchema(Schema):
     apikey = fields.Str(required=True)
     strategy = fields.Str(required=True)
@@ -29,7 +28,6 @@ class OrderSchema(Schema):
         missing=None, allow_none=True
     )  # Optional: passed from options order for execution reference
 
-
 class SmartOrderSchema(Schema):
     apikey = fields.Str(required=True)
     strategy = fields.Str(required=True)
@@ -57,7 +55,6 @@ class SmartOrderSchema(Schema):
         validate=validate.Range(min=0, error="Disclosed quantity must be a non-negative integer."),
     )
 
-
 class ModifyOrderSchema(Schema):
     apikey = fields.Str(required=True)
     strategy = fields.Str(required=True)
@@ -84,22 +81,18 @@ class ModifyOrderSchema(Schema):
         validate=validate.Range(min=0, error="Trigger price must be a non-negative number."),
     )
 
-
 class CancelOrderSchema(Schema):
     apikey = fields.Str(required=True)
     strategy = fields.Str(required=True)
     orderid = fields.Str(required=True)
 
-
 class ClosePositionSchema(Schema):
     apikey = fields.Str(required=True)
     strategy = fields.Str(required=True)
 
-
 class CancelAllOrderSchema(Schema):
     apikey = fields.Str(required=True)
     strategy = fields.Str(required=True)
-
 
 class BasketOrderItemSchema(Schema):
     exchange = fields.Str(required=True)
@@ -124,14 +117,12 @@ class BasketOrderItemSchema(Schema):
         validate=validate.Range(min=0, error="Disclosed quantity must be a non-negative integer."),
     )
 
-
 class BasketOrderSchema(Schema):
     apikey = fields.Str(required=True)
     strategy = fields.Str(required=True)
     orders = fields.List(
         fields.Nested(BasketOrderItemSchema), required=True
     )  # List of order details
-
 
 class SplitOrderSchema(Schema):
     apikey = fields.Str(required=True)
@@ -162,7 +153,6 @@ class SplitOrderSchema(Schema):
         missing=0,
         validate=validate.Range(min=0, error="Disclosed quantity must be a non-negative integer."),
     )
-
 
 class OptionsOrderSchema(Schema):
     apikey = fields.Str(required=True)
@@ -208,7 +198,6 @@ class OptionsOrderSchema(Schema):
         validate=validate.Range(min=0, error="Disclosed quantity must be a non-negative integer."),
     )
 
-
 class OptionsMultiOrderLegSchema(Schema):
     """Schema for a single leg in options multi-order (no symbol - resolved from offset)"""
 
@@ -246,7 +235,6 @@ class OptionsMultiOrderLegSchema(Schema):
         validate=validate.Range(min=0, error="Disclosed quantity must be a non-negative integer."),
     )
 
-
 class OptionsMultiOrderSchema(Schema):
     """Schema for options multi-order with multiple legs sharing common underlying"""
 
@@ -266,7 +254,6 @@ class OptionsMultiOrderSchema(Schema):
         validate=validate.Length(min=1, max=20, error="Legs must contain 1 to 20 items."),
     )
 
-
 class SyntheticFutureSchema(Schema):
     """Schema for synthetic future calculation"""
 
@@ -274,7 +261,6 @@ class SyntheticFutureSchema(Schema):
     underlying = fields.Str(required=True)  # Underlying symbol (NIFTY, BANKNIFTY, RELIANCE)
     exchange = fields.Str(required=True)  # Exchange (NSE_INDEX, NSE, BSE_INDEX, BSE)
     expiry_date = fields.Str(required=True)  # Expiry date in DDMMMYY format (e.g., 28OCT25)
-
 
 class MarginPositionSchema(Schema):
     """Schema for a single position in margin calculation"""
@@ -296,7 +282,6 @@ class MarginPositionSchema(Schema):
     )
     price = fields.Str(missing="0")  # String to match API contract
     trigger_price = fields.Str(missing="0")  # String to match API contract
-
 
 class MarginCalculatorSchema(Schema):
     """Schema for margin calculator request"""

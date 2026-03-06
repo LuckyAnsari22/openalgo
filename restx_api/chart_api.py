@@ -1,5 +1,4 @@
 import os
-import traceback
 
 from flask import jsonify, make_response, request
 from flask_restx import Namespace, Resource
@@ -19,7 +18,6 @@ logger = get_logger(__name__)
 
 # Initialize schema
 chart_schema = ChartSchema()
-
 
 @api.route("", strict_slashes=False)
 class ChartPreferencesResource(Resource):
@@ -47,8 +45,7 @@ class ChartPreferencesResource(Resource):
             return make_response(jsonify(response_data), status_code)
 
         except Exception as e:
-            logger.error(f"Unexpected error in chart GET endpoint: {e}")
-            traceback.print_exc()
+            logger.exception(f"Unexpected error in chart GET endpoint: {e}")
             return make_response(
                 jsonify({"status": "error", "message": "An unexpected error occurred"}), 500
             )
@@ -89,8 +86,7 @@ class ChartPreferencesResource(Resource):
         except ValidationError as err:
             return make_response(jsonify({"status": "error", "message": err.messages}), 400)
         except Exception as e:
-            logger.error(f"Unexpected error in chart POST endpoint: {e}")
-            traceback.print_exc()
+            logger.exception(f"Unexpected error in chart POST endpoint: {e}")
             return make_response(
                 jsonify({"status": "error", "message": "An unexpected error occurred"}), 500
             )

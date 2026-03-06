@@ -21,7 +21,6 @@ api = Namespace("optiongreeks", description="Option Greeks API")
 # Initialize schema
 option_greeks_schema = OptionGreeksSchema()
 
-
 @api.route("", strict_slashes=False)
 class OptionGreeks(Resource):
     @limiter.limit(GREEKS_RATE_LIMIT)

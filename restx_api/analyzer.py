@@ -1,5 +1,4 @@
 import os
-import traceback
 
 from flask import jsonify, make_response, request
 from flask_restx import Namespace, Resource
@@ -21,7 +20,6 @@ logger = get_logger(__name__)
 # Initialize schemas
 analyzer_schema = AnalyzerSchema()
 analyzer_toggle_schema = AnalyzerToggleSchema()
-
 
 @api.route("/", strict_slashes=False)
 class AnalyzerStatus(Resource):
@@ -56,7 +54,6 @@ class AnalyzerStatus(Resource):
             error_response = {"status": "error", "message": error_message}
             log_executor.submit(async_log_order, "analyzer_status", data, error_response)
             return make_response(jsonify(error_response), 500)
-
 
 @api.route("/toggle", strict_slashes=False)
 class AnalyzerToggle(Resource):

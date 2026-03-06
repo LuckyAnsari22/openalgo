@@ -19,7 +19,6 @@ logger = get_logger(__name__)
 # Initialize schema
 multiquotes_schema = MultiQuotesSchema()
 
-
 @api.route("/", strict_slashes=False)
 class MultiQuotes(Resource):
     @limiter.limit(API_RATE_LIMIT)

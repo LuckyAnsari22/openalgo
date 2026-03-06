@@ -19,7 +19,6 @@ logger = get_logger(__name__)
 # Initialize schema
 symbol_schema = SymbolSchema()
 
-
 @api.route("/", strict_slashes=False)
 class Symbol(Resource):
     @limiter.limit(API_RATE_LIMIT)

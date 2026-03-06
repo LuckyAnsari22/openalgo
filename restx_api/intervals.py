@@ -1,5 +1,4 @@
 import os
-import traceback
 
 from flask import jsonify, make_response, request
 from flask_restx import Namespace, Resource
@@ -19,7 +18,6 @@ logger = get_logger(__name__)
 
 # Initialize schema
 intervals_schema = IntervalsSchema()
-
 
 @api.route("/", strict_slashes=False)
 class Intervals(Resource):

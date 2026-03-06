@@ -122,7 +122,6 @@ api = Namespace("optionsmultiorder", description="Options Multi-Order API")
 # Get rate limit from environment
 ORDER_RATE_LIMIT = os.getenv("ORDER_RATE_LIMIT", "10 per second")
 
-
 @api.route("/", strict_slashes=False)
 class OptionsMultiOrder(Resource):
     @limiter.limit(ORDER_RATE_LIMIT)

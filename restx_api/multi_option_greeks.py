@@ -21,7 +21,6 @@ api = Namespace("multioptiongreeks", description="Batch Option Greeks API")
 # Initialize schema
 multi_option_greeks_schema = MultiOptionGreeksSchema()
 
-
 @api.route("", strict_slashes=False)
 class MultiOptionGreeks(Resource):
     @limiter.limit(API_RATE_LIMIT)

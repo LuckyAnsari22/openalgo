@@ -19,7 +19,6 @@ logger = get_logger(__name__)
 # Initialize schema
 timings_schema = MarketTimingsSchema()
 
-
 @api.route("/", strict_slashes=False)
 class MarketTimings(Resource):
     @limiter.limit(API_RATE_LIMIT)

@@ -97,7 +97,6 @@ api = Namespace("optionsorder", description="Place Options Order API")
 # Get rate limit from environment
 ORDER_RATE_LIMIT = os.getenv("ORDER_RATE_LIMIT", "10 per second")
 
-
 @api.route("/", strict_slashes=False)
 class OptionsOrder(Resource):
     @limiter.limit(ORDER_RATE_LIMIT)

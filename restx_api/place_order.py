@@ -15,7 +15,6 @@ logger = get_logger(__name__)
 
 # All functionality moved to place_order_service.py
 
-
 @api.route("/", strict_slashes=False)
 class PlaceOrder(Resource):
     @limiter.limit(ORDER_RATE_LIMIT)

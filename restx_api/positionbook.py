@@ -19,7 +19,6 @@ logger = get_logger(__name__)
 # Initialize schema
 positionbook_schema = PositionbookSchema()
 
-
 @api.route("/", strict_slashes=False)
 class Positionbook(Resource):
     @limiter.limit(API_RATE_LIMIT)

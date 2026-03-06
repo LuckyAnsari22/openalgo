@@ -19,7 +19,6 @@ logger = get_logger(__name__)
 # Initialize schema
 quotes_schema = QuotesSchema()
 
-
 @api.route("/", strict_slashes=False)
 class Quotes(Resource):
     @limiter.limit(API_RATE_LIMIT)

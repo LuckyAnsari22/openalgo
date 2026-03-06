@@ -1,5 +1,4 @@
 import os
-import traceback
 
 from flask import jsonify, make_response, request
 from flask_restx import Namespace, Resource
@@ -20,7 +19,6 @@ logger = get_logger(__name__)
 
 # Initialize schema
 modify_order_schema = ModifyOrderSchema()
-
 
 @api.route("/", strict_slashes=False)
 class ModifyOrder(Resource):
@@ -53,7 +51,7 @@ class ModifyOrder(Resource):
 
         except KeyError as e:
             missing_field = str(e)
-            logger.error(f"KeyError: Missing field {missing_field}")
+            logger.exception(f"KeyError: Missing field {missing_field}")
             error_message = f"A required field is missing: {missing_field}"
             if get_analyze_mode():
                 return make_response(jsonify(emit_analyzer_error(data, error_message)), 400)

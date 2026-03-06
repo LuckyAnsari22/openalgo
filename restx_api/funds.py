@@ -1,5 +1,4 @@
 import os
-import traceback
 
 from flask import jsonify, make_response, request
 from flask_restx import Namespace, Resource
@@ -21,7 +20,6 @@ logger = get_logger(__name__)
 # Initialize schema
 funds_schema = FundsSchema()
 
-
 @api.route("/", strict_slashes=False)
 class Funds(Resource):
     @limiter.limit(API_RATE_LIMIT)
@@ -40,8 +38,7 @@ class Funds(Resource):
         except ValidationError as err:
             return make_response(jsonify({"status": "error", "message": err.messages}), 400)
         except Exception as e:
-            logger.error(f"Unexpected error in funds endpoint: {e}")
-            traceback.print_exc()
+            logger.exception(f"Unexpected error in funds endpoint: {e}")
             return make_response(
                 jsonify({"status": "error", "message": "An unexpected error occurred"}), 500
             )

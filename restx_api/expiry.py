@@ -19,7 +19,6 @@ logger = get_logger(__name__)
 # Initialize schema
 expiry_schema = ExpirySchema()
 
-
 @api.route("/", strict_slashes=False)
 class Expiry(Resource):
     @limiter.limit(API_RATE_LIMIT)

@@ -2,7 +2,6 @@ import re
 
 from marshmallow import Schema, ValidationError, fields, validate
 
-
 # Custom validator for date or timestamp string
 def validate_date_or_timestamp(data):
     """
@@ -14,7 +13,6 @@ def validate_date_or_timestamp(data):
         raise ValidationError(
             "Field must be a string in 'YYYY-MM-DD' format or a numeric timestamp."
         )
-
 
 # Custom validator for option offset
 def validate_option_offset(data):
@@ -34,24 +32,20 @@ def validate_option_offset(data):
 
     return True
 
-
 class QuotesSchema(Schema):
     apikey = fields.Str(required=True)
     symbol = fields.Str(required=True)  # Single symbol
     exchange = fields.Str(required=True)  # Exchange (e.g., NSE, BSE)
 
-
 class SymbolExchangePair(Schema):
     symbol = fields.Str(required=True)
     exchange = fields.Str(required=True)
-
 
 class MultiQuotesSchema(Schema):
     apikey = fields.Str(required=True)
     symbols = fields.List(
         fields.Nested(SymbolExchangePair), required=True, validate=validate.Length(min=1)
     )
-
 
 class HistorySchema(Schema):
     apikey = fields.Str(required=True)
@@ -97,22 +91,18 @@ class HistorySchema(Schema):
     source = fields.Str(required=False, load_default="api", validate=validate.OneOf(["api", "db"]))
     # OI is now always included by default for F&O exchanges
 
-
 class DepthSchema(Schema):
     apikey = fields.Str(required=True)
     symbol = fields.Str(required=True)
     exchange = fields.Str(required=True)  # Exchange (e.g., NSE, BSE)
 
-
 class IntervalsSchema(Schema):
     apikey = fields.Str(required=True)
-
 
 class SymbolSchema(Schema):
     apikey = fields.Str(required=True)  # API Key for authentication
     symbol = fields.Str(required=True)  # Symbol code (e.g., RELIANCE)
     exchange = fields.Str(required=True)  # Exchange (e.g., NSE, BSE)
-
 
 class TickerSchema(Schema):
     apikey = fields.Str(required=True)
@@ -132,12 +122,10 @@ class TickerSchema(Schema):
         required=False, default="asc", validate=validate.OneOf(["asc", "desc"])
     )  # Sort direction
 
-
 class SearchSchema(Schema):
     apikey = fields.Str(required=True)  # API Key for authentication
     query = fields.Str(required=True)  # Search query/symbol name
     exchange = fields.Str(required=False)  # Optional exchange filter (e.g., NSE, BSE)
-
 
 class ExpirySchema(Schema):
     apikey = fields.Str(required=True)  # API Key for authentication
@@ -148,7 +136,6 @@ class ExpirySchema(Schema):
     instrumenttype = fields.Str(
         required=True, validate=validate.OneOf(["futures", "options"])
     )  # futures or options
-
 
 class OptionSymbolSchema(Schema):
     apikey = fields.Str(required=True)  # API Key for authentication
@@ -169,7 +156,6 @@ class OptionSymbolSchema(Schema):
     option_type = fields.Str(
         required=True, validate=validate.OneOf(["CE", "PE", "ce", "pe"])
     )  # Call or Put option
-
 
 class OptionGreeksSchema(Schema):
     apikey = fields.Str(required=True)  # API Key for authentication
@@ -193,7 +179,6 @@ class OptionGreeksSchema(Schema):
         required=False
     )  # Optional: Custom expiry time in HH:MM format (e.g., "15:30", "19:00"). If not provided, uses exchange defaults
 
-
 class InstrumentsSchema(Schema):
     apikey = fields.Str(required=True)  # API Key for authentication
     exchange = fields.Str(
@@ -205,7 +190,6 @@ class InstrumentsSchema(Schema):
     format = fields.Str(
         required=False, validate=validate.OneOf(["json", "csv"])
     )  # Output format (json or csv), defaults to json
-
 
 class OptionChainSchema(Schema):
     apikey = fields.Str(required=True)  # API Key for authentication
@@ -220,18 +204,15 @@ class OptionChainSchema(Schema):
         required=False, validate=validate.Range(min=1, max=100), allow_none=True
     )  # Number of strikes above/below ATM. If not provided, returns entire chain
 
-
 class MarketHolidaysSchema(Schema):
     apikey = fields.Str(required=True)  # API Key for authentication
     year = fields.Int(
         required=False, validate=validate.Range(min=2020, max=2050)
     )  # Year to get holidays for (defaults to current year)
 
-
 class MarketTimingsSchema(Schema):
     apikey = fields.Str(required=True)  # API Key for authentication
     date = fields.Str(required=True)  # Date in YYYY-MM-DD format
-
 
 class OptionSymbolRequest(Schema):
     """Schema for a single option symbol request in batch"""
@@ -240,7 +221,6 @@ class OptionSymbolRequest(Schema):
     exchange = fields.Str(required=True, validate=validate.OneOf(["NFO", "BFO", "CDS", "MCX"]))
     underlying_symbol = fields.Str(required=False)  # Optional: Specify underlying symbol
     underlying_exchange = fields.Str(required=False)  # Optional: Specify underlying exchange
-
 
 class MultiOptionGreeksSchema(Schema):
     """Schema for batch option greeks requests"""

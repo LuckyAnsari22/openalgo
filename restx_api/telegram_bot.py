@@ -92,7 +92,6 @@ preferences_model = api.model(
     },
 )
 
-
 def run_async(coro):
     """Helper to run async coroutine in sync context"""
     loop = asyncio.new_event_loop()
@@ -101,7 +100,6 @@ def run_async(coro):
         return loop.run_until_complete(coro)
     finally:
         loop.close()
-
 
 @api.route("/config", strict_slashes=False)
 class TelegramBotConfig(Resource):
@@ -180,7 +178,6 @@ class TelegramBotConfig(Resource):
                 jsonify({"status": "error", "message": "Failed to update bot configuration"}), 500
             )
 
-
 @api.route("/start", strict_slashes=False)
 class StartBot(Resource):
     @limiter.limit(TELEGRAM_RATE_LIMIT)
@@ -233,7 +230,6 @@ class StartBot(Resource):
                 jsonify({"status": "error", "message": f"Failed to start bot: {str(e)}"}), 500
             )
 
-
 @api.route("/stop", strict_slashes=False)
 class StopBot(Resource):
     @limiter.limit(TELEGRAM_RATE_LIMIT)
@@ -263,7 +259,6 @@ class StopBot(Resource):
                 jsonify({"status": "error", "message": f"Failed to stop bot: {str(e)}"}), 500
             )
 
-
 def get_webhook_secret():
     """
     Get or generate webhook secret for Telegram webhook verification.
@@ -283,7 +278,6 @@ def get_webhook_secret():
         return hashlib.sha256(bot_token.encode()).hexdigest()[:32]
 
     return None
-
 
 @api.route("/webhook", strict_slashes=False)
 class WebhookHandler(Resource):
@@ -335,7 +329,6 @@ class WebhookHandler(Resource):
             # Still return 200 to avoid Telegram retries for processing errors
             return make_response("", 200)
 
-
 @api.route("/users", strict_slashes=False)
 class TelegramUsers(Resource):
     @limiter.limit(TELEGRAM_RATE_LIMIT)
@@ -370,7 +363,6 @@ class TelegramUsers(Resource):
             return make_response(
                 jsonify({"status": "error", "message": "Failed to get users"}), 500
             )
-
 
 @api.route("/broadcast", strict_slashes=False)
 class BroadcastMessage(Resource):
@@ -425,7 +417,6 @@ class BroadcastMessage(Resource):
             return make_response(
                 jsonify({"status": "error", "message": "Failed to broadcast message"}), 500
             )
-
 
 @api.route("/notify", strict_slashes=False)
 class SendNotification(Resource):
@@ -511,7 +502,6 @@ class SendNotification(Resource):
                 jsonify({"status": "error", "message": "Failed to send notification"}), 500
             )
 
-
 @api.route("/stats", strict_slashes=False)
 class TelegramStats(Resource):
     @limiter.limit(TELEGRAM_RATE_LIMIT)
@@ -538,7 +528,6 @@ class TelegramStats(Resource):
             return make_response(
                 jsonify({"status": "error", "message": "Failed to get statistics"}), 500
             )
-
 
 @api.route("/preferences", strict_slashes=False)
 class UserPreferences(Resource):

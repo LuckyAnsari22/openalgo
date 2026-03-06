@@ -51,7 +51,6 @@ api = Namespace("syntheticfuture", description="Calculate Synthetic Future Price
 # Get rate limit from environment
 API_RATE_LIMIT = os.getenv("API_RATE_LIMIT", "10 per second")
 
-
 @api.route("/", strict_slashes=False)
 class SyntheticFuture(Resource):
     @limiter.limit(API_RATE_LIMIT)

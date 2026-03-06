@@ -21,7 +21,6 @@ logger = get_logger(__name__)
 # Initialize schema
 split_schema = SplitOrderSchema()
 
-
 @api.route("/", strict_slashes=False)
 class SplitOrder(Resource):
     @limiter.limit(API_RATE_LIMIT)

@@ -21,7 +21,6 @@ logger = get_logger(__name__)
 # Initialize schema
 smart_order_schema = SmartOrderSchema()
 
-
 @api.route("/", strict_slashes=False)
 class SmartOrder(Resource):
     @limiter.limit(SMART_ORDER_RATE_LIMIT)

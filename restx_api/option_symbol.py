@@ -50,7 +50,6 @@ api = Namespace("optionsymbol", description="Get Option Symbol based on Underlyi
 # Get rate limit from environment
 API_RATE_LIMIT = os.getenv("API_RATE_LIMIT", "10 per second")
 
-
 @api.route("/", strict_slashes=False)
 class OptionSymbol(Resource):
     @limiter.limit(API_RATE_LIMIT)

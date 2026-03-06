@@ -79,7 +79,6 @@ api = Namespace("optionchain", description="Get Option Chain with Real-time Quot
 # Get rate limit from environment
 API_RATE_LIMIT = os.getenv("API_RATE_LIMIT", "10 per second")
 
-
 @api.route("/", strict_slashes=False)
 class OptionChain(Resource):
     @limiter.limit(API_RATE_LIMIT)

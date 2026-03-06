@@ -19,7 +19,6 @@ logger = get_logger(__name__)
 # Initialize schema
 tradebook_schema = TradebookSchema()
 
-
 @api.route("/", strict_slashes=False)
 class Tradebook(Resource):
     @limiter.limit(API_RATE_LIMIT)
