@@ -96,7 +96,7 @@ class OptionGreeks(Resource):
                 logger.warning(f"Validation error in option greeks request: {err.messages}")
                 return make_response(
                     jsonify(
-                        {"status": "error", "message": "Validation failed", "errors": err.messages}
+                        {"status": "error", "message": str(err.messages)}
                     ),
                     400,
                 )
