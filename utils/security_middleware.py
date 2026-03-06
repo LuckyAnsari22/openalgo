@@ -1,5 +1,6 @@
 import logging
 from functools import wraps
+from typing import Any, Callable
 
 from flask import abort, jsonify, request
 
@@ -12,10 +13,24 @@ logger = logging.getLogger(__name__)
 class SecurityMiddleware:
     """Middleware to check for banned IPs and handle security"""
 
-    def __init__(self, app):
+    def __init__(self, app: Any) -> None:
+        """Initialize the SecurityMiddleware.
+
+        Args:
+            app (Any): The WSGI application structure.
+        """
         self.app = app
 
-    def __call__(self, environ, start_response):
+    def __call__(self, environ: dict[str, Any], start_response: Callable) -> Any:
+        """Process WSGI requests and block banned IP addresses.
+
+        Args:
+            environ (dict[str, Any]): The WSGI environment.
+            start_response (Callable): The WSGI start response callable.
+
+        Returns:
+            Any: The response from the WSGI application.
+        """
         # Get real client IP (handles proxies)
         client_ip = get_real_ip_from_environ(environ)
 
@@ -37,8 +52,15 @@ class SecurityMiddleware:
         return self.app(environ, start_response)
 
 
-def check_ip_ban(f):
-    """Decorator to check if IP is banned before processing request"""
+def check_ip_ban(f: Callable) -> Callable:
+    """Decorator to check if IP is banned before processing request.
+
+    Args:
+        f (Callable): The route function to wrap.
+
+    Returns:
+        Callable: The decorated route function.
+    """
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
