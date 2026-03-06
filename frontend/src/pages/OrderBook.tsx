@@ -330,7 +330,7 @@ export default function OrderBook() {
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>Order Filters</DialogTitle>
-                <DialogDescription>Filter orders by status</DialogDescription>
+                <DialogDescription className="sr-only">Filter orders by status</DialogDescription>
               </DialogHeader>
 
               <div className="space-y-6 py-4">

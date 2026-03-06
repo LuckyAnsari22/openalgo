@@ -625,7 +625,7 @@ export default function Positions() {
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>Position Settings</DialogTitle>
-                <DialogDescription>Configure grouping and filters</DialogDescription>
+                <DialogDescription className="sr-only">Configure grouping and filters</DialogDescription>
               </DialogHeader>
 
               <div className="space-y-6 py-4">

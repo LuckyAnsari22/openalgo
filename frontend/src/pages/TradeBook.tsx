@@ -218,7 +218,7 @@ export default function TradeBook() {
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>Trade Filters</DialogTitle>
-                <DialogDescription>Filter trades by action, exchange, or product</DialogDescription>
+                <DialogDescription className="sr-only">Filter trades by action, exchange, or product</DialogDescription>
               </DialogHeader>
 
               <div className="space-y-6 py-4">
