@@ -5,6 +5,7 @@ import { AuthSync } from '@/components/auth/AuthSync'
 import { FullWidthLayout } from '@/components/layout/FullWidthLayout'
 import { Layout } from '@/components/layout/Layout'
 import { PageLoader } from '@/components/ui/page-loader'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 // Lazy load all pages for code splitting
 // Public pages
@@ -112,120 +113,122 @@ function App() {
     <Providers>
       <BrowserRouter>
         <AuthSync>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              {/* Public routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/faq" element={<Faq />} />
-              <Route path="/setup" element={<Setup />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/download" element={<Download />} />
-              <Route path="/error" element={<ServerError />} />
-              <Route path="/rate-limited" element={<RateLimited />} />
+          <ErrorBoundary>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                {/* Public routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/faq" element={<Faq />} />
+                <Route path="/setup" element={<Setup />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/download" element={<Download />} />
+                <Route path="/error" element={<ServerError />} />
+                <Route path="/rate-limited" element={<RateLimited />} />
 
-              {/* Broker auth routes */}
-              <Route path="/broker" element={<BrokerSelect />} />
-              <Route path="/broker/:broker/totp" element={<BrokerTOTP />} />
-              {/* Dynamic broker TOTP routes for all supported brokers */}
-              <Route path="/:broker/auth" element={<BrokerTOTP />} />
+                {/* Broker auth routes */}
+                <Route path="/broker" element={<BrokerSelect />} />
+                <Route path="/broker/:broker/totp" element={<BrokerTOTP />} />
+                {/* Dynamic broker TOTP routes for all supported brokers */}
+                <Route path="/:broker/auth" element={<BrokerTOTP />} />
 
-              {/* Protected routes - requires broker auth */}
-              <Route element={<Layout />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/positions" element={<Positions />} />
-                <Route path="/orderbook" element={<OrderBook />} />
-                <Route path="/tradebook" element={<TradeBook />} />
-                <Route path="/holdings" element={<Holdings />} />
-                {/* Search routes - match Flask /search/* routes */}
-                <Route path="/search/token" element={<Token />} />
-                <Route path="/search" element={<Search />} />
-                {/* API Key management */}
-                <Route path="/apikey" element={<ApiKey />} />
-                {/* Phase 4: Charts & Webhook Configuration */}
-                <Route path="/platforms" element={<Platforms />} />
-                <Route path="/tradingview" element={<TradingView />} />
-                <Route path="/gocharting" element={<GoCharting />} />
-                <Route path="/pnl-tracker" element={<PnLTracker />} />
-                {/* Phase 4: Sandbox & Analyzer */}
-                <Route path="/sandbox" element={<Sandbox />} />
-                <Route path="/sandbox/mypnl" element={<SandboxPnL />} />
-                <Route path="/analyzer" element={<Analyzer />} />
-                <Route path="/tools" element={<Tools />} />
-                <Route path="/optionchain" element={<OptionChain />} />
-                <Route path="/ivchart" element={<IVChart />} />
-                <Route path="/oitracker" element={<OITracker />} />
-                <Route path="/maxpain" element={<MaxPain />} />
-                <Route path="/straddle" element={<StraddleChart />} />
-                <Route path="/volsurface" element={<VolSurface />} />
-                <Route path="/gex" element={<GEXDashboard />} />
-                <Route path="/ivsmile" element={<IVSmile />} />
-                <Route path="/oiprofile" element={<OIProfile />} />
-                <Route path="/websocket/test" element={<WebSocketTest />} />
-                <Route path="/websocket/test/20" element={<WebSocketTest depthLevel={20} />} />
-                <Route path="/websocket/test/30" element={<WebSocketTest depthLevel={30} />} />
-                <Route path="/websocket/test/50" element={<WebSocketTest depthLevel={50} />} />
-                {/* Phase 6: Webhook Strategies */}
-                <Route path="/strategy" element={<StrategyIndex />} />
-                <Route path="/strategy/new" element={<NewStrategy />} />
-                <Route path="/strategy/:strategyId" element={<ViewStrategy />} />
-                <Route path="/strategy/:strategyId/configure" element={<ConfigureSymbols />} />
-                {/* Phase 6: Python Strategies */}
-                <Route path="/python" element={<PythonStrategyIndex />} />
-                <Route path="/python/new" element={<NewPythonStrategy />} />
-                <Route path="/python/:strategyId/edit" element={<EditPythonStrategy />} />
-                <Route path="/python/:strategyId/logs" element={<PythonStrategyLogs />} />
-                <Route path="/python/:strategyId/schedule" element={<SchedulePythonStrategy />} />
-                <Route path="/python/guide" element={<PythonStrategyGuide />} />
-                {/* Phase 6: Chartink Strategies */}
-                <Route path="/chartink" element={<ChartinkIndex />} />
-                <Route path="/chartink/new" element={<NewChartinkStrategy />} />
-                <Route path="/chartink/:strategyId" element={<ViewChartinkStrategy />} />
-                <Route
-                  path="/chartink/:strategyId/configure"
-                  element={<ConfigureChartinkSymbols />}
-                />
-                {/* Flow Editor */}
-                <Route path="/flow" element={<FlowIndex />} />
-                <Route path="/flow/shortcuts" element={<FlowKeyboardShortcuts />} />
-                {/* Phase 7: Admin */}
-                <Route path="/admin" element={<AdminIndex />} />
-                <Route path="/admin/freeze" element={<FreezeQty />} />
-                <Route path="/admin/holidays" element={<Holidays />} />
-                <Route path="/admin/timings" element={<MarketTimings />} />
-                {/* Phase 7: Telegram */}
-                <Route path="/telegram" element={<TelegramIndex />} />
-                <Route path="/telegram/config" element={<TelegramConfig />} />
-                <Route path="/telegram/users" element={<TelegramUsers />} />
-                <Route path="/telegram/analytics" element={<TelegramAnalytics />} />
-                {/* Phase 7: Logs & Monitoring */}
-                <Route path="/logs" element={<LogsIndex />} />
-                <Route path="/logs/live" element={<LiveLogs />} />
-                <Route path="/logs/sandbox" element={<Analyzer />} />
-                <Route path="/logs/security" element={<SecurityDashboard />} />
-                <Route path="/logs/traffic" element={<TrafficDashboard />} />
-                <Route path="/logs/latency" element={<LatencyDashboard />} />
-                <Route path="/health" element={<HealthMonitor />} />
-                {/* Phase 7: Settings & Action Center */}
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/master-contract" element={<MasterContract />} />
-                <Route path="/action-center" element={<ActionCenter />} />
-              </Route>
+                {/* Protected routes - requires broker auth */}
+                <Route element={<Layout />}>
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/positions" element={<Positions />} />
+                  <Route path="/orderbook" element={<OrderBook />} />
+                  <Route path="/tradebook" element={<TradeBook />} />
+                  <Route path="/holdings" element={<Holdings />} />
+                  {/* Search routes - match Flask /search/* routes */}
+                  <Route path="/search/token" element={<Token />} />
+                  <Route path="/search" element={<Search />} />
+                  {/* API Key management */}
+                  <Route path="/apikey" element={<ApiKey />} />
+                  {/* Phase 4: Charts & Webhook Configuration */}
+                  <Route path="/platforms" element={<Platforms />} />
+                  <Route path="/tradingview" element={<TradingView />} />
+                  <Route path="/gocharting" element={<GoCharting />} />
+                  <Route path="/pnl-tracker" element={<PnLTracker />} />
+                  {/* Phase 4: Sandbox & Analyzer */}
+                  <Route path="/sandbox" element={<Sandbox />} />
+                  <Route path="/sandbox/mypnl" element={<SandboxPnL />} />
+                  <Route path="/analyzer" element={<Analyzer />} />
+                  <Route path="/tools" element={<Tools />} />
+                  <Route path="/optionchain" element={<OptionChain />} />
+                  <Route path="/ivchart" element={<IVChart />} />
+                  <Route path="/oitracker" element={<OITracker />} />
+                  <Route path="/maxpain" element={<MaxPain />} />
+                  <Route path="/straddle" element={<StraddleChart />} />
+                  <Route path="/volsurface" element={<VolSurface />} />
+                  <Route path="/gex" element={<GEXDashboard />} />
+                  <Route path="/ivsmile" element={<IVSmile />} />
+                  <Route path="/oiprofile" element={<OIProfile />} />
+                  <Route path="/websocket/test" element={<WebSocketTest />} />
+                  <Route path="/websocket/test/20" element={<WebSocketTest depthLevel={20} />} />
+                  <Route path="/websocket/test/30" element={<WebSocketTest depthLevel={30} />} />
+                  <Route path="/websocket/test/50" element={<WebSocketTest depthLevel={50} />} />
+                  {/* Phase 6: Webhook Strategies */}
+                  <Route path="/strategy" element={<StrategyIndex />} />
+                  <Route path="/strategy/new" element={<NewStrategy />} />
+                  <Route path="/strategy/:strategyId" element={<ViewStrategy />} />
+                  <Route path="/strategy/:strategyId/configure" element={<ConfigureSymbols />} />
+                  {/* Phase 6: Python Strategies */}
+                  <Route path="/python" element={<PythonStrategyIndex />} />
+                  <Route path="/python/new" element={<NewPythonStrategy />} />
+                  <Route path="/python/:strategyId/edit" element={<EditPythonStrategy />} />
+                  <Route path="/python/:strategyId/logs" element={<PythonStrategyLogs />} />
+                  <Route path="/python/:strategyId/schedule" element={<SchedulePythonStrategy />} />
+                  <Route path="/python/guide" element={<PythonStrategyGuide />} />
+                  {/* Phase 6: Chartink Strategies */}
+                  <Route path="/chartink" element={<ChartinkIndex />} />
+                  <Route path="/chartink/new" element={<NewChartinkStrategy />} />
+                  <Route path="/chartink/:strategyId" element={<ViewChartinkStrategy />} />
+                  <Route
+                    path="/chartink/:strategyId/configure"
+                    element={<ConfigureChartinkSymbols />}
+                  />
+                  {/* Flow Editor */}
+                  <Route path="/flow" element={<FlowIndex />} />
+                  <Route path="/flow/shortcuts" element={<FlowKeyboardShortcuts />} />
+                  {/* Phase 7: Admin */}
+                  <Route path="/admin" element={<AdminIndex />} />
+                  <Route path="/admin/freeze" element={<FreezeQty />} />
+                  <Route path="/admin/holidays" element={<Holidays />} />
+                  <Route path="/admin/timings" element={<MarketTimings />} />
+                  {/* Phase 7: Telegram */}
+                  <Route path="/telegram" element={<TelegramIndex />} />
+                  <Route path="/telegram/config" element={<TelegramConfig />} />
+                  <Route path="/telegram/users" element={<TelegramUsers />} />
+                  <Route path="/telegram/analytics" element={<TelegramAnalytics />} />
+                  {/* Phase 7: Logs & Monitoring */}
+                  <Route path="/logs" element={<LogsIndex />} />
+                  <Route path="/logs/live" element={<LiveLogs />} />
+                  <Route path="/logs/sandbox" element={<Analyzer />} />
+                  <Route path="/logs/security" element={<SecurityDashboard />} />
+                  <Route path="/logs/traffic" element={<TrafficDashboard />} />
+                  <Route path="/logs/latency" element={<LatencyDashboard />} />
+                  <Route path="/health" element={<HealthMonitor />} />
+                  {/* Phase 7: Settings & Action Center */}
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/master-contract" element={<MasterContract />} />
+                  <Route path="/action-center" element={<ActionCenter />} />
+                </Route>
 
-              {/* Full-width protected routes */}
-              <Route element={<FullWidthLayout />}>
-                <Route path="/playground" element={<Playground />} />
-                <Route path="/historify" element={<Historify />} />
-                <Route path="/historify/charts" element={<HistorifyCharts />} />
-                <Route path="/historify/charts/:symbol" element={<HistorifyCharts />} />
-                {/* Flow Editor (full-width for canvas) */}
-                <Route path="/flow/editor/:id" element={<FlowEditor />} />
-              </Route>
+                {/* Full-width protected routes */}
+                <Route element={<FullWidthLayout />}>
+                  <Route path="/playground" element={<Playground />} />
+                  <Route path="/historify" element={<Historify />} />
+                  <Route path="/historify/charts" element={<HistorifyCharts />} />
+                  <Route path="/historify/charts/:symbol" element={<HistorifyCharts />} />
+                  {/* Flow Editor (full-width for canvas) */}
+                  <Route path="/flow/editor/:id" element={<FlowEditor />} />
+                </Route>
 
-              {/* 404 Not Found */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
+                {/* 404 Not Found */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
         </AuthSync>
       </BrowserRouter>
     </Providers>
