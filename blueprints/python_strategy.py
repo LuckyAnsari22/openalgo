@@ -76,7 +76,7 @@ def broadcast_status_update(strategy_id: str, status: str, message: str = None):
             try:
                 q.put_nowait(event)
                 active_subscribers.append(q)
-            except:
+            except Exception:
                 pass  # Queue full or dead, skip
         SSE_SUBSCRIBERS.clear()
         SSE_SUBSCRIBERS.extend(active_subscribers)
@@ -268,7 +268,7 @@ def format_ist_time(dt):
         if isinstance(dt, str):
             try:
                 dt = datetime.fromisoformat(dt.replace("Z", "+00:00"))
-            except:
+            except Exception:
                 return dt
         if not dt.tzinfo:
             dt = IST.localize(dt)
@@ -423,7 +423,7 @@ def start_strategy_process(strategy_id):
                 try:
                     # Ensure log directory is writable
                     os.chmod(log_file.parent, 0o755)
-                except:
+                except Exception:
                     pass
 
             # Check if we can write to log directory
@@ -542,7 +542,7 @@ def stop_strategy_process(strategy_id):
                         STRATEGY_CONFIGS[strategy_id]["last_stopped"] = get_ist_time().isoformat()
                         save_configs()
                         return True, "Strategy stopped"
-                    except:
+                    except Exception:
                         pass
             return False, "Strategy not running"
 
@@ -724,7 +724,7 @@ def cleanup_dead_processes():
                     pid = info.get("pid")
                     if pid and not psutil.pid_exists(pid):
                         is_dead = True
-                except:
+                except Exception:
                     is_dead = True
 
             if is_dead:
@@ -1445,7 +1445,7 @@ def new_strategy():
             if not IS_WINDOWS:
                 try:
                     os.chmod(file_path, 0o755)
-                except:
+                except Exception:
                     pass
 
             # Get form data - sanitize strategy name
@@ -1845,7 +1845,7 @@ def clear_logs(strategy_id):
         for log_file in log_files:
             try:
                 total_size += log_file.stat().st_size
-            except:
+            except Exception:
                 pass
 
         # Strategy not running, safe to delete all log files
@@ -2460,7 +2460,7 @@ def cleanup_on_exit():
         for strategy_id in list(RUNNING_STRATEGIES.keys()):
             try:
                 stop_strategy_process(strategy_id)
-            except:
+            except Exception:
                 pass
     logger.info("Cleanup complete")
 
@@ -2473,7 +2473,7 @@ atexit.register(cleanup_on_exit)
 
 def restore_strategy_states():
     """Restore strategy states on startup - restart running strategies or mark as error"""
-    logger.info("Restoring strategy states from previous session...")
+    logger.debug("Restoring strategy states from previous session...")
 
     # During startup, we need to be more lenient with master contract checks
     # since the session might not be fully initialized yet
@@ -2588,7 +2588,7 @@ def restore_strategy_states():
             f"State restoration complete: {restored_count} restored, {error_count} in error state"
         )
     else:
-        logger.info("No strategies needed state restoration")
+        logger.debug("No strategies needed state restoration")
 
 
 def check_and_start_pending_strategies():
@@ -2695,7 +2695,7 @@ def initialize_with_app_context():
         # This stops any scheduled strategies if app starts on a weekend/holiday
         daily_trading_day_check()
 
-        logger.info(f"Python Strategy System fully initialized on {OS_TYPE}")
+        logger.debug(f"Python Strategy System fully initialized on {OS_TYPE}")
     except Exception as e:
         logger.warning(f"Deferred initialization skipped (likely no app context yet): {e}")
         _initialized = False  # Reset flag to retry later

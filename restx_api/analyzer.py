@@ -29,7 +29,16 @@ class AnalyzerStatus(Resource):
     def post(self):
         """Get analyzer mode status and statistics"""
         try:
+            # Get request data
             data = request.json
+
+            if data is None:
+                return make_response(
+                    jsonify(
+                        {"status": "error", "message": "Request body is missing or invalid JSON"}
+                    ),
+                    400,
+                )
 
             # Validate and deserialize input using AnalyzerSchema
             try:
@@ -63,8 +72,17 @@ class AnalyzerToggle(Resource):
     @limiter.limit(API_RATE_LIMIT)
     def post(self):
         """Toggle analyzer mode on/off"""
+        data = None  # Initialize for error handler
         try:
             data = request.json
+
+            if data is None:
+                return make_response(
+                    jsonify(
+                        {"status": "error", "message": "Request body is missing or invalid JSON"}
+                    ),
+                    400,
+                )
 
             # Validate and deserialize input using AnalyzerToggleSchema
             try:

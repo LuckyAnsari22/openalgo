@@ -33,6 +33,17 @@ def ratelimit_handler(e):
     return jsonify(error="Rate limit exceeded"), 429
 
 
+def get_remote_ip():
+    """
+    Get the remote IP address of the client.
+    
+    Securely handles reverse proxies by relying on request.remote_addr.
+    The ProxyFix middleware (configured in app.py via TRUSTED_PROXIES) 
+    must be used to populate this correctly when behind a proxy.
+    """
+    return request.remote_addr
+
+
 @brlogin_bp.route("/<broker>/callback", methods=["POST", "GET"])
 @limiter.limit(LOGIN_RATE_LIMIT_MIN)
 @limiter.limit(LOGIN_RATE_LIMIT_HOUR)
@@ -41,11 +52,11 @@ def broker_callback(broker, para=None):
     logger.debug(f"Session contents: {dict(session)}")
     logger.info(f"Session has user key: {'user' in session}")
 
-    # Special handling for Compositedge - it comes from external OAuth and might lose session
-    if broker == "compositedge" and "user" not in session:
+    # Special handling for OAuth brokers that come from external OAuth and might lose session
+    if broker in ("compositedge", "rmoney") and "user" not in session:
         # For Compositedge OAuth callback, we'll handle authentication differently
         # The session will be established after successful auth token validation
-        logger.info("Compositedge callback without session - will establish session after auth")
+        logger.info(f"{broker} callback without session - will establish session after auth")
     # Special handling for mstock POST - check session but provide better error instead of redirect
     elif broker == "mstock" and request.method == "POST" and "user" not in session:
         # Redirect to broker selection page with error message instead of login
@@ -94,6 +105,15 @@ def broker_callback(broker, para=None):
             totp_code = request.form.get("totp")
             # to store user_id in the DB
             user_id = clientcode
+            # Static IP Validation for Angel One (Compliance Apr 1, 2026)
+            from broker.angel.config.static_ip_config import angel_static_ip_config
+
+            is_valid_ip, ip_msg = angel_static_ip_config.validate_request_ip(get_remote_ip())
+            if not is_valid_ip:
+                logger.warning(f"Angel One Static IP validation failed: {ip_msg}")
+                # For now, we log but continue, unless it's past April 1, 2026
+                # return handle_auth_failure(ip_msg, forward_url="broker.html")
+
             auth_token, feed_token, error_message = auth_function(clientcode, broker_pin, totp_code)
             forward_url = "broker.html"
 
@@ -346,6 +366,13 @@ def broker_callback(broker, para=None):
                 or request.args.get("token")
             )
 
+            # Static IP Validation for Dhan (Compliance Apr 1, 2026)
+            from broker.dhan.config.static_ip_config import dhan_static_ip_config
+
+            is_valid_ip, ip_msg = dhan_static_ip_config.validate_request_ip(get_remote_ip())
+            if not is_valid_ip:
+                logger.warning(f"Dhan Static IP validation failed: {ip_msg}")
+
             if token_id:
                 # Step 3: Consume consent with tokenId
                 logger.debug(f"Dhan broker - Received tokenId: {token_id}")
@@ -390,6 +417,13 @@ def broker_callback(broker, para=None):
         elif request.method == "POST":
             # This should only handle direct access token submission now
             # OAuth flow is handled by /dhan/initiate-oauth
+            # Static IP Validation for Dhan (Compliance Apr 1, 2026)
+            from broker.dhan.config.static_ip_config import dhan_static_ip_config
+
+            is_valid_ip, ip_msg = dhan_static_ip_config.validate_request_ip(get_remote_ip())
+            if not is_valid_ip:
+                logger.warning(f"Dhan Static IP validation failed: {ip_msg}")
+
             access_token = request.form.get("access_token")
 
             if access_token:
@@ -405,6 +439,7 @@ def broker_callback(broker, para=None):
 
                     if is_valid:
                         logger.info("Dhan direct token authentication successful")
+                        user_id = None  # Initialize for success flow
                         forward_url = "broker.html"
                         # The auth_token will be handled by the common success flow below
                     else:
@@ -432,6 +467,12 @@ def broker_callback(broker, para=None):
         logger.debug(f"IndMoney broker - The code is {code}")
         auth_token, error_message = auth_function(code)
 
+        forward_url = "broker.html"
+
+    elif broker == "deltaexchange":
+        code = "deltaexchange"
+        logger.debug(f"DeltaExchange broker - code: {code}")
+        auth_token, error_message = auth_function(code)
         forward_url = "broker.html"
 
     elif broker == "dhan_sandbox":
@@ -686,7 +727,80 @@ def broker_callback(broker, para=None):
 
                 forward_url = "broker.html"
 
+    elif broker == "rmoney":
+        try:
+            # Extract session data from XTS OAuth callback
+            session_data = None
+            if request.method == "POST":
+                raw_data = request.get_data().decode("utf-8")
+                if request.headers.get("Content-Type") == "application/x-www-form-urlencoded":
+                    if raw_data.startswith("session="):
+                        from urllib.parse import unquote
+
+                        session_data = unquote(raw_data[8:])
+                    else:
+                        session_data = raw_data
+                else:
+                    session_data = raw_data
+            else:
+                session_data = request.args.get("session")
+
+            if session_data:
+                # XTS OAuth returns the full login session with token directly
+                session_json = json.loads(session_data)
+                if isinstance(session_json, str):
+                    session_json = json.loads(session_json)
+
+                # The session already contains the final auth token and userID
+                auth_token = session_json.get("token")
+                user_id = session_json.get("userID")
+
+                if not auth_token:
+                    logger.error(f"RMoney callback - No token in session. Keys: {list(session_json.keys())}")
+                    return jsonify({"error": "No token found in session data"}), 400
+
+                logger.info(f"RMoney OAuth authentication successful for user: {user_id}")
+
+                # Get feed token for market data
+                from broker.rmoney.api.auth_api import get_feed_token
+
+                feed_token, feed_user_id, feed_error = get_feed_token()
+                if feed_error:
+                    logger.warning(f"RMoney feed token error: {feed_error}")
+                    feed_token = None
+                if not user_id:
+                    user_id = feed_user_id
+
+                error_message = None
+                forward_url = "broker.html"
+            else:
+                # No session data - initial request, redirect to RMoney OAuth login
+                from broker.rmoney.baseurl import INTERACTIVE_URL as RMONEY_INTERACTIVE_URL
+
+                BROKER_API_KEY_LOCAL = os.getenv("BROKER_API_KEY")
+                callback_url = url_for(
+                    "brlogin.broker_callback", broker="rmoney", _external=True
+                )
+                oauth_url = f"{RMONEY_INTERACTIVE_URL}/thirdparty?appKey={BROKER_API_KEY_LOCAL}&returnURL={callback_url}"
+                return redirect(oauth_url)
+
+        except json.JSONDecodeError as e:
+            return jsonify({"error": f"Invalid session data format: {str(e)}"}), 400
+        except Exception as e:
+            logger.exception(f"RMoney callback error: {e}")
+            return jsonify({"error": f"Error processing request: {str(e)}"}), 500
+
     else:
+        # Static IP Validation for Zerodha (Compliance Apr 1, 2026)
+        if broker == "zerodha":
+            from broker.zerodha.config.static_ip_config import zerodha_static_ip_config
+
+            is_valid_ip, ip_msg = zerodha_static_ip_config.validate_request_ip(
+                get_remote_ip()
+            )
+            if not is_valid_ip:
+                logger.warning(f"Zerodha Static IP validation failed: {ip_msg}")
+
         code = request.args.get("code") or request.args.get("request_token")
         logger.debug(f"Generic broker - The code is {code}")
         auth_token, error_message = auth_function(code)
@@ -702,9 +816,9 @@ def broker_callback(broker, para=None):
             auth_token = f"{auth_token}"
 
         # For brokers that have user_id and feed_token from authenticate_broker
-        if broker in ["angel", "compositedge", "pocketful", "definedge", "dhan"]:
-            # For Compositedge, handle missing session user
-            if broker == "compositedge" and "user" not in session:
+        if broker in ["angel", "compositedge", "pocketful", "definedge", "dhan", "rmoney"]:
+            # For OAuth brokers, handle missing session user
+            if broker in ("compositedge", "rmoney") and "user" not in session:
                 # Get the admin user from the database
                 from database.user_db import find_user_by_username
 
@@ -713,9 +827,9 @@ def broker_callback(broker, para=None):
                     # Use the admin user's username
                     username = admin_user.username
                     session["user"] = username
-                    logger.info(f"Compositedge callback: Set session user to {username}")
+                    logger.info(f"{broker} callback: Set session user to {username}")
                 else:
-                    logger.error("No admin user found in database for Compositedge callback")
+                    logger.error(f"No admin user found in database for {broker} callback")
                     return handle_auth_failure(
                         "No user account found. Please login first.", forward_url="broker.html"
                     )
