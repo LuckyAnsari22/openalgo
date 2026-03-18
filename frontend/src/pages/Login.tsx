@@ -159,16 +159,17 @@ export default function Login() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="username">Username</Label>
-                  <Input
-                    id="username"
-                    type="text"
-                    placeholder="Enter your username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                    disabled={isLoading}
-                    autoComplete="username"
-                  />
+                    <Input
+                      id="username"
+                      type="text"
+                      placeholder="Enter your username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      required
+                      disabled={isLoading}
+                      autoComplete="username"
+                      maxLength={100}
+                    />
                 </div>
 
                 <div className="space-y-2">
@@ -184,6 +185,7 @@ export default function Login() {
                       disabled={isLoading}
                       autoComplete="current-password"
                       className="pr-10"
+                      maxLength={128}
                     />
                     <Button
                       type="button"

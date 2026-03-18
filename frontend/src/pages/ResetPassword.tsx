@@ -308,6 +308,7 @@ export default function ResetPassword() {
                     placeholder="Enter your email"
                     required
                     autoFocus
+                    maxLength={100}
                   />
                   <p className="text-sm text-muted-foreground">
                     Enter the email address associated with your account
@@ -450,6 +451,7 @@ export default function ResetPassword() {
                     placeholder="Enter new password"
                     required
                     autoFocus
+                    maxLength={128}
                   />
                   <Progress value={passwordStrength} className="h-2" />
                   {password && (
@@ -468,6 +470,7 @@ export default function ResetPassword() {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Confirm new password"
                     required
+                    maxLength={128}
                   />
                   {passwordsMatch !== null && (
                     <p className={`text-sm ${passwordsMatch ? 'text-green-500' : 'text-red-500'}`}>
