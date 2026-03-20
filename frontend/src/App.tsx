@@ -57,6 +57,7 @@ const IVChart = lazy(() => import('@/pages/IVChart'))
 const OITracker = lazy(() => import('@/pages/OITracker'))
 const MaxPain = lazy(() => import('@/pages/MaxPain'))
 const StraddleChart = lazy(() => import('@/pages/StraddleChart'))
+const CustomStraddle = lazy(() => import('@/pages/CustomStraddle'))
 const VolSurface = lazy(() => import('@/pages/VolSurface'))
 const GEXDashboard = lazy(() => import('@/pages/GEXDashboard'))
 const IVSmile = lazy(() => import('@/pages/IVSmile'))
@@ -86,6 +87,9 @@ const ConfigureChartinkSymbols = lazy(() => import('@/pages/chartink/ConfigureCh
 const FlowIndex = lazy(() => import('@/pages/flow/FlowIndex'))
 const FlowEditor = lazy(() => import('@/pages/flow/FlowEditor'))
 const FlowKeyboardShortcuts = lazy(() => import('@/pages/flow/FlowKeyboardShortcuts'))
+
+// Leverage page
+const Leverage = lazy(() => import('@/pages/Leverage'))
 
 // Admin pages
 const AdminIndex = lazy(() => import('@/pages/admin/AdminIndex'))
@@ -157,6 +161,7 @@ function App() {
                 <Route path="/oitracker" element={<OITracker />} />
                 <Route path="/maxpain" element={<MaxPain />} />
                 <Route path="/straddle" element={<StraddleChart />} />
+                <Route path="/straddlepnl" element={<CustomStraddle />} />
                 <Route path="/volsurface" element={<VolSurface />} />
                 <Route path="/gex" element={<GEXDashboard />} />
                 <Route path="/ivsmile" element={<IVSmile />} />
@@ -188,6 +193,8 @@ function App() {
                 {/* Flow Editor */}
                 <Route path="/flow" element={<FlowIndex />} />
                 <Route path="/flow/shortcuts" element={<FlowKeyboardShortcuts />} />
+                {/* Leverage Configuration */}
+                <Route path="/leverage" element={<Leverage />} />
                 {/* Phase 7: Admin */}
                 <Route path="/admin" element={<AdminIndex />} />
                 <Route path="/admin/freeze" element={<FreezeQty />} />

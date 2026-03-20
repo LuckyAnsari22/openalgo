@@ -49,7 +49,7 @@ def configure_llvmlite_paths() -> None:
 
 def check_tmp_noexec() -> bool:
     """
-    Check if /tmp is mounted with the noexec flag.
+    Check if /tmp is mounted with the noexec flag and print a warning.
 
     This helps users understand why llvmlite might fail to load.
 
@@ -57,7 +57,7 @@ def check_tmp_noexec() -> bool:
         bool: True if /tmp is likely mounted with noexec on Linux, False otherwise.
     """
     if sys.platform != 'linux':
-        return
+        return False
 
     try:
         with open('/proc/mounts', 'r') as f:
@@ -78,9 +78,12 @@ def check_tmp_noexec() -> bool:
                         print("   1. Remount /tmp: sudo mount -o remount,exec /tmp")
                         print("   2. Or set NUMBA_DISABLE_JIT=1 in your .env file")
                         print("=" * 70 + "\n")
-                    return
+                        return True
+                    return False
     except (OSError, IOError):
         pass  # Can't read /proc/mounts, skip the check
+
+    return False
 
 
 def check_env_version_compatibility() -> bool:
