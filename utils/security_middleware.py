@@ -1,21 +1,43 @@
 import logging
 from functools import wraps
+from typing import Any, Callable
 
-from flask import abort, jsonify, request
+from flask import abort, jsonify
 
-from database.traffic_db import Error404Tracker, IPBan, logs_session
+from database.traffic_db import IPBan, logs_session
 from utils.ip_helper import get_real_ip, get_real_ip_from_environ
 
 logger = logging.getLogger(__name__)
 
 
 class SecurityMiddleware:
-    """Middleware to check for banned IPs and handle security"""
+    """
+    Middleware to check for banned IPs and handle security.
 
-    def __init__(self, app):
+    This WSGI middleware intercepts all incoming requests to check if the client's
+    IP address is in the ban list.
+    """
+
+    def __init__(self, app: Any):
+        """
+        Initialize the SecurityMiddleware.
+
+        Args:
+            app (Any): The WSGI application to wrap.
+        """
         self.app = app
 
-    def __call__(self, environ, start_response):
+    def __call__(self, environ: dict[str, Any], start_response: Callable) -> list[bytes]:
+        """
+        Intersects the request to check for IP bans.
+
+        Args:
+            environ (dict[str, Any]): The WSGI environment dictionary.
+            start_response (Callable): The WSGI start_response callable.
+
+        Returns:
+            list[bytes]: The WSGI response (Access Denied for banned IPs).
+        """
         # Get real client IP (handles proxies)
         client_ip = get_real_ip_from_environ(environ)
 
@@ -37,11 +59,19 @@ class SecurityMiddleware:
         return self.app(environ, start_response)
 
 
-def check_ip_ban(f):
-    """Decorator to check if IP is banned before processing request"""
+def check_ip_ban(f: Callable) -> Callable:
+    """
+    Decorator to check if IP is banned before processing request.
+
+    Args:
+        f (Callable): The view function to decorate.
+
+    Returns:
+        Callable: The decorated function that checks for IP bans.
+    """
 
     @wraps(f)
-    def decorated_function(*args, **kwargs):
+    def decorated_function(*args: Any, **kwargs: Any) -> Any:
         client_ip = get_real_ip()
 
         if IPBan.is_ip_banned(client_ip):
@@ -53,8 +83,13 @@ def check_ip_ban(f):
     return decorated_function
 
 
-def init_security_middleware(app):
-    """Initialize security middleware"""
+def init_security_middleware(app: Any) -> None:
+    """
+    Initialize security middleware for the Flask application.
+
+    Args:
+        app (Any): The Flask application instance.
+    """
     # Wrap the WSGI app with security middleware
     app.wsgi_app = SecurityMiddleware(app.wsgi_app)
 

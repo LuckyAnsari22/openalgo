@@ -4,6 +4,7 @@ import re
 import time
 from datetime import datetime, date
 from threading import Thread
+from typing import Any, Optional, Tuple, Union, Dict
 
 import pytz
 from flask import current_app as app
@@ -30,7 +31,7 @@ IST = pytz.timezone("Asia/Kolkata")
 UTC = pytz.utc
 
 
-def get_master_contract_cutoff(broker: str):
+def get_master_contract_cutoff(broker: str) -> Tuple[int, int, Any]:
     """
     Get master contract cutoff time and reference timezone for the given broker.
 
@@ -46,8 +47,11 @@ def get_master_contract_cutoff(broker: str):
         the current UTC calendar day — the first login of each UTC day fetches
         fresh data, subsequent logins reuse it.
 
+    Args:
+        broker: The broker name (e.g., 'aliceblue', 'dhan', 'binance').
+
     Returns:
-        tuple: (hour: int, minute: int, tz: tzinfo)
+        Tuple[int, int, Any]: (hour, minute, timezone object)
     """
     if broker.lower() in CRYPTO_BROKERS:
         env_val = os.getenv("CRYPTO_MASTER_CONTRACT_CUTOFF_TIME", "00:00")
@@ -75,7 +79,7 @@ def get_master_contract_cutoff(broker: str):
         return default[0], default[1], tz
 
 
-def should_download_master_contract(broker):
+def should_download_master_contract(broker: str) -> Tuple[bool, str]:
     """
     Determine if master contract should be downloaded based on smart download logic.
 
@@ -88,8 +92,11 @@ def should_download_master_contract(broker):
     Indian brokers use IST and a default 08:00 IST cutoff.
     Crypto brokers use UTC and a default 00:00 UTC cutoff (once per UTC day).
 
+    Args:
+        broker: The broker name.
+
     Returns:
-        tuple: (should_download: bool, reason: str)
+        Tuple[bool, str]: (should_download, reason)
     """
     last_download = get_last_download_time(broker)
 
@@ -129,7 +136,7 @@ def should_download_master_contract(broker):
         return True, f"Download was before {cutoff_hour:02d}:{cutoff_minute:02d} {tz_label} cutoff"
 
 
-def load_existing_master_contract(broker):
+def load_existing_master_contract(broker: str) -> bool:
     """
     Load existing master contract data without re-downloading.
 
@@ -137,6 +144,9 @@ def load_existing_master_contract(broker):
     1. Marks the status as ready (using cached data)
     2. Loads symbols into memory cache
     3. Runs sandbox catch-up tasks
+
+    Args:
+        broker: The broker name.
 
     Returns:
         bool: True if successful, False otherwise
@@ -174,8 +184,13 @@ def load_existing_master_contract(broker):
         return False
 
 
-def is_ajax_request():
-    """Check if the current request is an AJAX/fetch request from React."""
+def is_ajax_request() -> bool:
+    """
+    Check if the current request is an AJAX/fetch request from React.
+
+    Returns:
+        bool: True if it is an AJAX request, False otherwise.
+    """
     # Check for common AJAX indicators
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return True
@@ -191,7 +206,7 @@ def is_ajax_request():
     return False
 
 
-def validate_password_strength(password):
+def validate_password_strength(password: str) -> Tuple[bool, Optional[str]]:
     """
     Validate password strength according to security requirements.
 
@@ -203,10 +218,10 @@ def validate_password_strength(password):
     - At least 1 special character (!@#$%^&*)
 
     Args:
-        password (str): The password to validate
+        password (str): The password to validate.
 
     Returns:
-        tuple: (is_valid: bool, error_message: str or None)
+        Tuple[bool, Optional[str]]: (is_valid, error_message)
     """
     if not password:
         return False, "Password is required"
@@ -229,16 +244,16 @@ def validate_password_strength(password):
     return True, None
 
 
-def mask_api_credential(credential, show_chars=4):
+def mask_api_credential(credential: str, show_chars: int = 4) -> str:
     """
     Mask API credentials for display purposes, showing only the first few characters.
 
     Args:
-        credential (str): The credential to mask
-        show_chars (int): Number of characters to show from the beginning
+        credential (str): The credential to mask.
+        show_chars (int): Number of characters to show from the beginning.
 
     Returns:
-        str: Masked credential string
+        str: Masked credential string.
     """
     if not credential or len(credential) <= show_chars:
         return "*" * 8  # Return generic mask for short/empty credentials
@@ -246,12 +261,15 @@ def mask_api_credential(credential, show_chars=4):
     return credential[:show_chars] + "*" * (len(credential) - show_chars)
 
 
-def async_master_contract_download(broker):
+def async_master_contract_download(broker: str) -> Any:
     """
-    Asynchronously download the master contract and emit a WebSocket event upon completion,
-    with the 'broker' parameter specifying the broker for which to download the contract.
+    Asynchronously download the master contract and emit a WebSocket event upon completion.
 
-    Tracks download duration and exchange-wise statistics for smart download feature.
+    Args:
+        broker (str): The broker name for which to download the contract.
+
+    Returns:
+        Any: The status of the download operation.
     """
     start_time = time.time()
 
@@ -327,12 +345,29 @@ def async_master_contract_download(broker):
     return master_contract_status
 
 
-def handle_auth_success(auth_token, user_session_key, broker, feed_token=None, user_id=None):
+def handle_auth_success(
+    auth_token: str,
+    user_session_key: str,
+    broker: str,
+    feed_token: Optional[str] = None,
+    user_id: Optional[str] = None,
+) -> Any:
     """
     Handles common tasks after successful authentication.
-    - Sets session parameters
-    - Stores auth token in the database
-    - Initiates asynchronous master contract download (smart: skips if downloaded after 8 AM IST)
+
+    - Sets session parameters.
+    - Stores auth token in the database.
+    - Initiates asynchronous master contract download.
+
+    Args:
+        auth_token (str): The authentication token from the broker.
+        user_session_key (str): Unique key for the user session.
+        broker (str): The broker name.
+        feed_token (Optional[str]): The feed token if available.
+        user_id (Optional[str]): The user ID if available.
+
+    Returns:
+        Any: Flask redirect or JSON response.
     """
     # Set session parameters
     session["logged_in"] = True
@@ -398,10 +433,18 @@ def handle_auth_success(auth_token, user_session_key, broker, feed_token=None, u
             return redirect(url_for("auth.broker_login"))
 
 
-def handle_auth_failure(error_message, forward_url="broker.html"):
+def handle_auth_failure(error_message: str, forward_url: str = "broker.html") -> Any:
     """
     Handles common tasks after failed authentication.
+
     Returns JSON for AJAX requests, redirect for OAuth callbacks.
+
+    Args:
+        error_message (str): The error message to display.
+        forward_url (str): The URL to redirect to on failure.
+
+    Returns:
+        Any: Flask redirect or JSON response.
     """
     logger.error(f"Authentication error: {error_message}")
     if is_ajax_request():
@@ -411,10 +454,12 @@ def handle_auth_failure(error_message, forward_url="broker.html"):
         return redirect(url_for("auth.broker_login"))
 
 
-def get_feed_token():
+def get_feed_token() -> Optional[str]:
     """
     Get the feed token from session or database.
-    Returns None if feed token doesn't exist or broker doesn't support it.
+
+    Returns:
+        Optional[str]: Feed token if it exists, None otherwise.
     """
     if "FEED_TOKEN" in session:
         return session["FEED_TOKEN"]
