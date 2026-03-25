@@ -40,8 +40,16 @@ def calculate_total_collateral(holdings):
     return round(total, 2)
 
 
-def get_margin_data(auth_token):
-    """Fetch margin data from Upstox's API using the provided auth token with httpx connection pooling."""
+def get_margin_data(auth_token: str) -> dict:
+    """
+    Fetch margin data from Upstox's API using the provided auth token.
+
+    Args:
+        auth_token (str): The authentication token for the Upstox API.
+
+    Returns:
+        dict: Processed margin data including available cash, collateral, and M2M metrics.
+    """
     logger.debug("Attempting to fetch margin data...")
     try:
         api_key = os.getenv("BROKER_API_KEY")

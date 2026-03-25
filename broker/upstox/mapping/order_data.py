@@ -98,6 +98,15 @@ def calculate_order_statistics(order_data):
 
 
 def transform_order_data(orders):
+    """
+    Transforms order data into a standardized format.
+
+    Args:
+        orders: A dictionary or a list of order dictionaries.
+
+    Returns:
+        list: A list of transformed order dictionaries.
+    """
     # Directly handling a dictionary assuming it's the structure we expect
     if isinstance(orders, dict):
         # Convert the single dictionary into a list of one dictionary
@@ -131,10 +140,28 @@ def transform_order_data(orders):
 
 
 def map_trade_data(trade_data):
+    """
+    Map trade data by delegating to map_order_data.
+
+    Args:
+        trade_data: The trade data to map.
+
+    Returns:
+        The mapped trade data.
+    """
     return map_order_data(trade_data)
 
 
 def transform_tradebook_data(tradebook_data):
+    """
+    Transforms raw tradebook data into a standardized format.
+
+    Args:
+        tradebook_data: A list of trade dictionaries.
+
+    Returns:
+        list: A list of transformed trade dictionaries.
+    """
     transformed_data = []
     for trade in tradebook_data:
         transformed_trade = {
@@ -153,10 +180,28 @@ def transform_tradebook_data(tradebook_data):
 
 
 def map_position_data(position_data):
+    """
+    Map position data by delegating to map_order_data.
+
+    Args:
+        position_data: The position data to map.
+
+    Returns:
+        The mapped position data.
+    """
     return map_order_data(position_data)
 
 
 def transform_positions_data(positions_data):
+    """
+    Transforms raw position data into a standardized format.
+
+    Args:
+        positions_data: A list of position dictionaries.
+
+    Returns:
+        list: A list of transformed position dictionaries.
+    """
     transformed_data = []
     for position in positions_data:
         # Handle null average_price from Upstox API
@@ -206,6 +251,15 @@ def transform_positions_data(positions_data):
 
 
 def transform_holdings_data(holdings_data):
+    """
+    Transforms raw holdings data into a standardized format.
+
+    Args:
+        holdings_data: A list of holding dictionaries.
+
+    Returns:
+        list: A list of transformed holding dictionaries.
+    """
     transformed_data = []
     for holdings in holdings_data:
         transformed_position = {
@@ -256,6 +310,15 @@ def map_portfolio_data(portfolio_data):
 
 
 def calculate_portfolio_statistics(holdings_data):
+    """
+    Calculates portfolio statistics from holdings data.
+
+    Args:
+        holdings_data: A list of holding dictionaries containing last_price, quantity, average_price, and pnl.
+
+    Returns:
+        dict: A dictionary of calculated portfolio statistics.
+    """
     totalholdingvalue = sum(item["last_price"] * item["quantity"] for item in holdings_data)
     totalinvvalue = sum(item["average_price"] * item["quantity"] for item in holdings_data)
     totalprofitandloss = sum(item["pnl"] for item in holdings_data)

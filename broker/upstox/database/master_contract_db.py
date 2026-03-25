@@ -44,17 +44,29 @@ class SymToken(Base):
 
 
 def init_db():
+    """
+    Initialize the Master Contract database by creating all defined tables.
+    """
     logger.info("Initializing Master Contract DB")
     Base.metadata.create_all(bind=engine)
 
 
 def delete_symtoken_table():
+    """
+    Delete all records from the Symtoken table and commit the transaction.
+    """
     logger.info("Deleting Symtoken Table")
     SymToken.query.delete()
     db_session.commit()
 
 
-def copy_from_dataframe(df):
+def copy_from_dataframe(df: pd.DataFrame):
+    """
+    Perform a bulk insert of new tokens from a pandas DataFrame into the Symtoken table.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the token data to be inserted.
+    """
     logger.info("Performing Bulk Insert")
     # Convert DataFrame to a list of dictionaries
     data_dict = df.to_dict(orient="records")
@@ -94,7 +106,16 @@ def download_and_unzip_upstox_data(url, input_path, output_path):
             shutil.copyfileobj(f_in, f_out)
 
 
-def reformat_symbol(row):
+def reformat_symbol(row: pd.Series) -> str:
+    """
+    Reformat the symbol based on its instrument type to match the OpenAlgo format.
+
+    Args:
+        row (pd.Series): A row from the DataFrame containing 'symbol' and 'instrumenttype'.
+
+    Returns:
+        str: The reformatted symbol.
+    """
     symbol = row["symbol"]
     instrument_type = row["instrumenttype"]
 
@@ -285,7 +306,14 @@ def process_upstox_json(path):
     return df
 
 
-def delete_upstox_temp_data(input_path, output_path):
+def delete_upstox_temp_data(input_path: str, output_path: str):
+    """
+    Delete temporary downloaded and decompressed JSON files.
+
+    Args:
+        input_path (str): The path to the compressed JSON file.
+        output_path (str): The path to the decompressed JSON file.
+    """
     try:
         # Check if the file exists
         if os.path.exists(input_path) and os.path.exists(output_path):
@@ -300,6 +328,10 @@ def delete_upstox_temp_data(input_path, output_path):
 
 
 def master_contract_download():
+    """
+    Download, process, and update the master contract database with Upstox data.
+    Emits a progress status via SocketIO.
+    """
     logger.info("Downloading Master Contract")
     url = "https://assets.upstox.com/market-quote/instruments/exchange/complete.json.gz"
     input_path = "tmp/temp_upstox.json.gz"
@@ -324,7 +356,17 @@ def master_contract_download():
         return socketio.emit("master_contract_download", {"status": "error", "message": str(e)})
 
 
-def search_symbols(symbol, exchange):
+def search_symbols(symbol: str, exchange: str):
+    """
+    Search for symbols in the Symtoken table matching the given symbol substring and exchange.
+
+    Args:
+        symbol (str): Substring to match across symbols.
+        exchange (str): The exchange to filter by.
+
+    Returns:
+        list: A list of matching SymToken objects.
+    """
     return SymToken.query.filter(
         SymToken.symbol.like(f"%{symbol}%"), SymToken.exchange == exchange
     ).all()

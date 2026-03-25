@@ -9,7 +9,17 @@ from utils.logging import get_logger
 logger = get_logger(__name__)
 
 
-def authenticate_broker(code):
+def authenticate_broker(code: str) -> tuple[str | None, str | None]:
+    """
+    Authenticate with Upstox API using the provided authorization code.
+
+    Args:
+        code (str): The authorization code received from Upstox OAuth flow.
+
+    Returns:
+        tuple[str | None, str | None]: A tuple containing the access token (if successful) 
+            and an error message (if any).
+    """
     try:
         BROKER_API_KEY = os.getenv("BROKER_API_KEY")
         BROKER_API_SECRET = os.getenv("BROKER_API_SECRET")

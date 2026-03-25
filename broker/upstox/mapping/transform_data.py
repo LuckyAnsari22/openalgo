@@ -33,6 +33,15 @@ def transform_data(data, token):
 
 
 def transform_modify_order_data(data):
+    """
+    Transforms the modify order API request data to the broker's format.
+
+    Args:
+        data: A dictionary containing the order modification details.
+
+    Returns:
+        dict: The transformed order data dictionary payload.
+    """
     return {
         "quantity": data["quantity"],
         "validity": "DAY",
