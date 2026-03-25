@@ -1,6 +1,7 @@
 import {
   AlertTriangle,
   ArrowUpDown,
+  Briefcase,
   ChevronDown,
   ChevronRight,
   Download,
@@ -866,10 +867,18 @@ export default function Positions() {
           ) : error ? (
             <div className="text-center py-12 text-muted-foreground">{error}</div>
           ) : filteredPositions.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <p className="mb-4">No positions match your filters</p>
+            <div className="flex flex-col items-center justify-center py-12 space-y-3">
+              <div className="bg-muted p-3 rounded-full">
+                <Briefcase className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">No open positions</h3>
+              <p className="text-sm text-muted-foreground max-w-sm text-center mb-4">
+                {hasActiveFilters 
+                  ? "No positions match your current filters." 
+                  : "You don't have any open or closed positions for today."}
+              </p>
               {hasActiveFilters && (
-                <Button variant="ghost" size="sm" onClick={clearFilters}>
+                <Button variant="outline" size="sm" onClick={clearFilters}>
                   Clear Filters
                 </Button>
               )}
