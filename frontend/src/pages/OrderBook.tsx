@@ -2,6 +2,7 @@ import {
   CheckCircle2,
   Clock,
   Download,
+  FileX2,
   Loader2,
   Pencil,
   RefreshCw,
@@ -516,7 +517,15 @@ export default function OrderBook() {
                   </Button>
                 </div>
               ) : (
-                'No orders today'
+                <div className="flex flex-col items-center justify-center space-y-3">
+                  <div className="bg-muted p-3 rounded-full">
+                    <FileX2 className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground">No orders found</h3>
+                  <p className="text-sm text-muted-foreground max-w-sm">
+                    You haven't placed any orders today. When you do, they will appear here.
+                  </p>
+                </div>
               )}
             </div>
           ) : (
