@@ -102,17 +102,29 @@ class SymToken(Base):
 
 
 def init_db():
+    """
+    Initialize the Master Contract database by creating all defined tables.
+    """
     logger.info("Initializing Master Contract DB")
     Base.metadata.create_all(bind=engine)
 
 
 def delete_symtoken_table():
+    """
+    Delete all records from the Symtoken table and commit the transaction.
+    """
     logger.info("Deleting Symtoken Table")
     SymToken.query.delete()
     db_session.commit()
 
 
-def copy_from_dataframe(df):
+def copy_from_dataframe(df: pd.DataFrame):
+    """
+    Perform a bulk insert of new tokens from a pandas DataFrame into the Symtoken table.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the token data to be inserted.
+    """
     logger.info("Performing Bulk Insert")
     # Convert DataFrame to a list of dictionaries
     data_dict = df.to_dict(orient="records")
@@ -205,7 +217,16 @@ def download_csv_fyers_data(output_path: str) -> tuple[bool, list[str], str | No
     return success, downloaded_files, error_msg
 
 
-def reformat_symbol_detail(s):
+def reformat_symbol_detail(s: str) -> str:
+    """
+    Reformat the symbol detail string to match the OpenAlgo standard symbol format.
+
+    Args:
+        s (str): The raw symbol string (e.g., "NIFTY 02 Mar 26 30600").
+
+    Returns:
+        str: The reformatted symbol (e.g., "NIFTY02MAR2630600").
+    """
     parts = s.split()  # Split the string into parts
     # Reorder and format the parts to match the OpenAlgo standard symbol format
     # Input format: "Name DD Mon YY Strike" (e.g., "NIFTY 02 Mar 26 30600")
@@ -680,7 +701,13 @@ def process_fyers_mcx_json(path):
     return token_df
 
 
-def delete_fyers_temp_data(output_path):
+def delete_fyers_temp_data(output_path: str):
+    """
+    Delete temporary Fyers CSV and JSON files from the specified output path.
+
+    Args:
+        output_path (str): The directory containing the temporary files.
+    """
     # Check each file in the directory
     for filename in os.listdir(output_path):
         # Construct the full file path
@@ -695,6 +722,10 @@ def delete_fyers_temp_data(output_path):
 
 
 def master_contract_download():
+    """
+    Download, process, and update the master contract database with Fyers data.
+    Emits a progress status via SocketIO.
+    """
     logger.info("Downloading Master Contract")
 
     output_path = "tmp"
@@ -727,7 +758,17 @@ def master_contract_download():
         return socketio.emit("master_contract_download", {"status": "error", "message": f"{e}"})
 
 
-def search_symbols(symbol, exchange):
+def search_symbols(symbol: str, exchange: str):
+    """
+    Search for symbols in the Symtoken table matching the given symbol substring and exchange.
+
+    Args:
+        symbol (str): Substring to match across symbols.
+        exchange (str): The exchange to filter by.
+
+    Returns:
+        list: A list of matching SymToken objects.
+    """
     return SymToken.query.filter(
         SymToken.symbol.like(f"%{symbol}%"), SymToken.exchange == exchange
     ).all()

@@ -18,6 +18,16 @@ exchange_map = {
 
 
 def get_exchange(exchange_code, segment_code):
+    """
+    Get the string name of the exchange based on exchange and segment codes.
+
+    Args:
+        exchange_code (int): The numeric code for the exchange.
+        segment_code (int): The numeric code for the segment.
+
+    Returns:
+        str: The string name of the exchange, or "Unknown Exchange".
+    """
     # Key is a tuple of exchange_code and segment_code
     key = (exchange_code, segment_code)
 
@@ -104,6 +114,15 @@ def calculate_order_statistics(order_data):
 
 
 def transform_order_data(orders):
+    """
+    Transforms the Fyers order data into the standardized OpenAlgo format.
+
+    Args:
+        orders: A single order dictionary or a list of order dictionaries.
+
+    Returns:
+        list: A list of transformed order dictionaries.
+    """
     if isinstance(orders, dict):
         orders = [orders]
 
@@ -197,6 +216,15 @@ def map_trade_data(trade_data):
 
 
 def transform_tradebook_data(tradebook_data):
+    """
+    Transforms Fyers tradebook data into a standardized format.
+
+    Args:
+        tradebook_data: A list of Fyers trade dictionaries.
+
+    Returns:
+        list: A list of transformed trade dictionaries.
+    """
     transformed_data = []
     side_map = {1: "BUY", -1: "SELL"}
     product_map = {"CNC": "CNC", "INTRADAY": "MIS", "MARGIN": "NRML", "CO": "CO", "BO": "BO"}
@@ -272,6 +300,15 @@ def map_position_data(position_data):
 
 
 def transform_positions_data(positions_data):
+    """
+    Transforms Fyers positions data into a standardized OpenAlgo format.
+
+    Args:
+        positions_data: A list of Fyers position dictionaries.
+
+    Returns:
+        list: A list of transformed position dictionaries.
+    """
     transformed_data = []
 
     for position in positions_data:
@@ -354,6 +391,15 @@ def map_portfolio_data(portfolio_data):
 
 
 def transform_holdings_data(holdings_data):
+    """
+    Transforms Fyers holdings data into a standardized format.
+
+    Args:
+        holdings_data: A list of Fyers holding dictionaries.
+
+    Returns:
+        list: A list of transformed holding dictionaries.
+    """
     transformed_data = []
     for holdings in holdings_data:
         pnl = round(holdings.get("pl", 0.0), 2)
@@ -381,6 +427,15 @@ def transform_holdings_data(holdings_data):
 
 
 def calculate_portfolio_statistics(holdings_data):
+    """
+    Calculates portfolio statistics from Fyers holdings data.
+
+    Args:
+        holdings_data: A list of holding dictionaries containing ltp, costPrice, quantity, and pl.
+
+    Returns:
+        dict: A dictionary of calculated portfolio statistics.
+    """
     totalholdingvalue = sum(item["ltp"] * item["quantity"] for item in holdings_data)
     totalinvvalue = sum(item["costPrice"] * item["quantity"] for item in holdings_data)
     totalprofitandloss = sum(item["pl"] for item in holdings_data)

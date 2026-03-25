@@ -81,22 +81,70 @@ def get_api_response(endpoint, auth, method="GET", payload=""):
 
 
 def get_order_book(auth):
+    """
+    Fetch the OpenAlgo order book using Fyers API.
+
+    Args:
+        auth: Authentication token
+
+    Returns:
+        dict: Parsed JSON response containing the order book
+    """
     return get_api_response("/api/v3/orders", auth)
 
 
 def get_trade_book(auth):
+    """
+    Fetch the OpenAlgo trade book using Fyers API.
+
+    Args:
+        auth: Authentication token
+
+    Returns:
+        dict: Parsed JSON response containing the trade book
+    """
     return get_api_response("/api/v3/tradebook", auth)
 
 
 def get_positions(auth):
+    """
+    Fetch current open positions from Fyers API.
+
+    Args:
+        auth: Authentication token
+
+    Returns:
+        dict: Parsed JSON response containing the positions
+    """
     return get_api_response("/api/v3/positions", auth)
 
 
 def get_holdings(auth):
+    """
+    Fetch current holdings from Fyers API.
+
+    Args:
+        auth: Authentication token
+
+    Returns:
+        dict: Parsed JSON response containing the holdings
+    """
     return get_api_response("/api/v3/holdings", auth)
 
 
 def get_open_position(tradingsymbol, exchange, product, auth):
+    """
+    Get the net quantity of an open position for a specific symbol.
+
+    Args:
+        tradingsymbol: OpenAlgo trading symbol
+        exchange: Exchange string (e.g., NSE, BSE)
+        product: OpenAlgo product type
+        auth: Authentication token
+
+    Returns:
+        str: Net quantity of the open position ("0" if not found)
+    """
     # Convert Trading Symbol from OpenAlgo Format to Broker Format Before Search in OpenPosition
     tradingsymbol = get_br_symbol(tradingsymbol, exchange)
 
@@ -183,6 +231,16 @@ def place_order_api(data, auth):
 
 
 def place_smartorder_api(data, auth):
+    """
+    Place a smart order, automatically adjusting to existing open positions.
+
+    Args:
+        data: Order details including target position size
+        auth: Authentication token
+
+    Returns:
+        tuple: (response object, response data, order ID)
+    """
     AUTH_TOKEN = auth
 
     # If no API call is made in this function then res will return None
