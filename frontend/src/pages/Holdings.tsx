@@ -3,6 +3,7 @@ import {
   Download,
   Loader2,
   Pause,
+  PieChart,
   Radio,
   RefreshCw,
   TrendingDown,
@@ -322,7 +323,15 @@ export default function Holdings() {
           ) : error ? (
             <div className="text-center py-12 text-muted-foreground">{error}</div>
           ) : holdings.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">No holdings found</div>
+            <div className="flex flex-col items-center justify-center py-12 space-y-3">
+              <div className="bg-muted p-3 rounded-full">
+                <PieChart className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">No holdings found</h3>
+              <p className="text-sm text-muted-foreground max-w-sm text-center mb-4">
+                You don't have any portfolio holdings. Your long-term investments will appear here.
+              </p>
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <Table>
