@@ -1,4 +1,4 @@
-import { Download, Loader2, RefreshCw, Settings2, TrendingDown, TrendingUp } from 'lucide-react'
+import { Download, Inbox, Loader2, RefreshCw, Settings2, TrendingDown, TrendingUp } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { tradingApi } from '@/api/trading'
 import { Badge } from '@/components/ui/badge'
@@ -417,7 +417,15 @@ export default function TradeBook() {
                   </Button>
                 </div>
               ) : (
-                'No trades today'
+                <div className="flex flex-col items-center justify-center space-y-3">
+                  <div className="bg-muted p-3 rounded-full">
+                    <Inbox className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground">No trades found</h3>
+                  <p className="text-sm text-muted-foreground max-w-sm mb-4">
+                    You haven't executed any trades today. Once your orders are filled, they will appear here.
+                  </p>
+                </div>
               )}
             </div>
           ) : (
