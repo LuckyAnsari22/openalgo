@@ -10,6 +10,26 @@
 
 </div>
 
+---
+
+### 🏆 FOSS Hack 2026 — My Contributions
+
+> **88 commits** · **44,444+ lines** · **580+ files** · **8 weeks of sustained work**  
+> ✅ **Merged to production** — officially credited in [v2.0.0.2 release](https://github.com/marketcalls/openalgo/releases)
+
+| Area | Impact |
+|------|--------|
+| 🔧 **Error Handling** | Modernized 47+ modules — replaced unsafe `except` + `traceback.print_exc()` with `logger.exception()` |
+| 📚 **Documentation** | Google-style docstrings for 100+ modules across 9 broker adapters + core modules |
+| 🧪 **Testing** | 100+ unit tests for order placement, cancellation, basket orders, smart orders |
+| 🛡️ **Security** | Fixed IP spoofing, added security headers, CSRF validation, null input checks |
+| ♿ **Accessibility** | WCAG 2.1 — ARIA labels, tooltips, empty states, error boundaries across 9+ pages |
+| 🐳 **Infrastructure** | Docker volume migration, persistent order queue, env permission handling |
+
+**📋 [Full Contribution Details →](FOSSHACK.md)**
+
+---
+
 ## What is OpenAlgo?
 OpenAlgo is a free, open source, self hosted algorithmic trading platform that bridges your trading ideas with real execution. Built with Python Flask and a modern React frontend, it provides a unified API layer across 30+ Indian brokers, enabling seamless automation from Amibroker, TradingView, GoCharting, N8N, Python, Java, Go, .NET, Node.js, ChartInk, MetaTrader, Excel, and Google Sheets. Traders can also receive strategy alerts directly on Telegram, ensuring real time visibility and control.
 
